@@ -1,5 +1,5 @@
 var request = require('request');
-var apiKey = require('../config/alphaVantageKey.json');
+var apiKey = require('../../config/alphaVantageKey.json');
 var url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=$`;
 const smaService = ()=> {
     request.get({
