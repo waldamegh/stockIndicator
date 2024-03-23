@@ -1,18 +1,20 @@
 {
   "name": "stockindicator",
   "version": "1.0.0",
-  "description": "implementation of the stock indicator formulas",
-  "main": "main.js",
+  "description": "In finance, the stock indicator is commonly used in technical analysis to help smooth out the price data by creating a constantly predicted price. This project uses the following stock indicator formulas:\r - Simple Moving Average (SMA)\r - Exponential Moving Average (EMA)",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon server.js"
   },
-  "author": "WD",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "request": "^2.88.2"
+    "jquery": "^3.7.1",
+    "knex": "^3.1.0",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.2"
   }
 }

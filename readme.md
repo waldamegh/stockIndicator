@@ -3,7 +3,7 @@ In finance, the stock indicator is commonly used in technical analysis to help s
 - Simple Moving Average (SMA)
 - Exponential Moving Average (EMA)
 
-## Simple Moving Avrage (SMA)
+## Simple Moving Average (SMA)
 A calculation that takes the arithmetic mean of a given set of prices over a specific number of days in the past.
 
 $SMA = {A1 + A2 + An \over n}$
@@ -19,3 +19,4 @@ A 200-day moving average will have a much greater degree of lag than a 20-day MA
 A rising moving average indicates that the security is in an uptrend, while a declining moving average indicates that it is in a downtrend.
 
 ## Exponential Moving Average (EMA)
+TBA

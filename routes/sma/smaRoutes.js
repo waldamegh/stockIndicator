@@ -1,8 +1,8 @@
 const express = require('express');
 const smaCalc = require('./smaController');
-const smaService = require('./smaService');
+const smaValidator = require('./smaValidator');
 const router = express.Router();
 
-router.get('/', smaCalc);
+router.post('/', smaValidator, smaCalc);
 
 module.exports = router;
