@@ -38,7 +38,7 @@ A popular trading strategy that uses one or more moving averages to identify pot
 This strategy is to identify potential trend changes by looking for crossovers between the *price* and a *moving average (MA)* (SMA or EMA).
 ~~~
 📉 Buy Signal = Price > MA 
-📈 Sell Signal Price < MA 
+📈 Sell Signal = Price < MA 
 ~~~
 
 ### Double Moving Average Crossover Strategy
