@@ -1,14 +1,12 @@
 const express = require('express');
 const app = express();
-const smaRoutes = require('./routes/sma/smaRoutes');
+const stocksRoutes = require('./routes/stocks/stocksRoutes');
+const smaRoutes = require('./routes/movingAverage/movingAverageRoutes');
 
-app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.static('public'));
-app.use('/sma', smaRoutes);
 
-// app.get('/', (req, res)=>{
-//     res.render('home');
-// })
+app.use('/stocks/movingAverage', smaRoutes);
+app.use('/stocks', stocksRoutes);
 
 module.exports = app;

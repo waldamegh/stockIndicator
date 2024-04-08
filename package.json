@@ -4,6 +4,7 @@
   "description": "In finance, the stock indicator is commonly used in technical analysis to help smooth out the price data by creating a constantly predicted price. This project uses the following stock indicator formulas:\r - Simple Moving Average (SMA)\r - Exponential Moving Average (EMA)",
   "main": "app.js",
   "scripts": {
+    "prestart": "sh ./prestart.sh",
     "start": "nodemon server.js"
   },
   "author": "",

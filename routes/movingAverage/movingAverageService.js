@@ -1,5 +1,6 @@
 var apiKey = require('../../config/alphaVantageKey.json');
 const db = require('../../models/dbHelpers');
+const { fetchStockPriceService, getDate } = require('../stocks/stocksService');
 
 const findStock = async (symbol) => {
   try {
@@ -25,6 +26,7 @@ const getStockInfo = async (symbol) => {
     console.log("===Getting Stock Info ...");
     const response = await fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`);
     const data = await response.json();
+    console.log(data)
     if (data) {
       const stockInfo = {
         symbol: symbol,
@@ -65,8 +67,7 @@ const getStockPrice = async (symbol, outputsize) => {
           });
         } else {
           if (key != "Meta Data") {
-            console.log(`===Error response body,  Body: ${data}`);
-            return false;
+            throw new Error(`===Error response body,  Body: ${JSON.stringify(data)}`);
           }
         }
       });
@@ -131,50 +132,31 @@ const updateStockPrice = async (symbol) => {
     //check the latest date in the db
     console.log('===Finding Latest Stock Price ...');
     const lastPrice = await db.findLatestStockPrice(symbol);
-    //getting yesterday date and day number (workingday or weekend)
-    const yesterday = () => {
-      let d = new Date();
-      d.setDate(d.getDate() - 1);
-      return d;
-    };
-    const yesterdayDate = yesterday().toISOString().split('T')[0];
-    const yesterdayDay = () => {
-      const day = new Date(yesterdayDate);
-      return day.getDay();
-    }
-    //check if price is uptodate
-    if (lastPrice.dayDate < yesterdayDate && (yesterdayDay() !== 6 || yesterdayDay() !== 0)) {
-      console.log('===There is a missing prices');
-      //add missing date price
-      await addMissingStockPrice(symbol, lastPrice.dayDate);
+    if (!lastPrice) {
+      await addStockPrice(symbol, 'full');
     } else {
-      console.log(`===Stock Price is uptodate, latest price date is ${lastPrice.dayDate}`);
+      //getting yesterday date and day number (workingday or weekend)
+      const yesterdayDate = getDate(1);
+      const yesterdayDay = () => {
+        const day = new Date(yesterdayDate);
+        return day.getDay();
+      }
+      //check if price is uptodate
+      if (lastPrice.dayDate < yesterdayDate && (yesterdayDay() !== 6 || yesterdayDay() !== 0)) {
+        console.log('===There is a missing prices');
+        //add missing date price
+        await addMissingStockPrice(symbol, lastPrice.dayDate);
+      } else {
+        console.log(`===Stock Price is uptodate, latest price date is ${lastPrice.dayDate}`);
+      }
     }
+
   } catch (error) {
     throw new Error(`===Error finding last stock price, Error: ${error}`);
   }
 }
 
-const fetchStockPrice = async (symbol) => {
-  try {
-    let stockPriceArray = [];
-    const stockPrice = await db.findStockPriceById(symbol);
-    if (stockPrice) {
-      console.log('===Fetching Date & Price of stock')
-      stockPrice.forEach((price) => {
-        stockPriceArray.push({ date: price.dayDate, price: price.closePrice })
-      });
-      // console.log(stockPriceArray)
-      return stockPriceArray;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    throw new Error(`===Error fetching stock price, Error: ${error}`);
-  }
-}
-
-const smaService = async (symbol) => {
+const movingAverageService = async (symbol, fromDate, toDate) => {
   try {
     //find stock in db
     console.log('===Finding Stock ...');
@@ -193,10 +175,10 @@ const smaService = async (symbol) => {
       await updateStockPrice(symbol, 'compact');
     }
     console.log('===Fetching Stock Price ...');
-    const stockPrice = await fetchStockPrice(symbol);
+    const stockPrice = await fetchStockPriceService(symbol, fromDate, toDate);
     return stockPrice;
   } catch (error) {
     throw new Error(`===Error smaService, Error: ${error}`);
   }
 }
-module.exports = smaService;
+module.exports = movingAverageService;

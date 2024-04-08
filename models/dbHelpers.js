@@ -4,11 +4,18 @@ const config = require('../knexfile');
 const db = knex(config.development);
 
 module.exports = {
+    getAllStocks,
     addStock,
     findStockById,
     findStockPriceById,
+    findStockPriceByIdFromToDate,
     addDailyPrice,
-    findLatestStockPrice
+    findLatestStockPrice,
+    findOldestStockPrice
+}
+
+async function getAllStocks() {
+    return db('stocks');
 }
 
 async function addStock(stock) {
@@ -24,7 +31,13 @@ async function findStockById(id) {
 
 async function findStockPriceById(id) {
     return db('dailyPrice')
-        .where({ symbol : id});
+        .where({ symbol: id });
+}
+
+async function findStockPriceByIdFromToDate(id, fromDate, toDate) {
+    return db('dailyPrice')
+        .where({ symbol: id })
+        .whereBetween('dayDate', [fromDate, toDate]);
 }
 
 async function addDailyPrice(dailyPrice, symbol) {
@@ -36,7 +49,14 @@ async function addDailyPrice(dailyPrice, symbol) {
 
 async function findLatestStockPrice(id) {
     return db('dailyPrice')
-        .where({ symbol : id})
+        .where({ symbol: id })
         .orderBy('dayDate', 'desc')
+        .first();
+}
+
+async function findOldestStockPrice(id) {
+    return db('dailyPrice')
+        .where({ symbol: id })
+        .orderBy('dayDate', 'asc')
         .first();
 }
