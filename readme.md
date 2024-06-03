@@ -52,7 +52,7 @@ This strategy is to use two moving averages of different lengths and look for a 
 This strategy is to use three moving averages of different lengths and look for a crossover between them to signal a potential change in trend direction.
 ~~~
 📉 Buy Signal = (shorter-term MA >  mid-term MA) && (mid-term MA > longer-term MA) 
-📈 Sell Signal = (shorter-term MA <  mid-term MA) && (mid-term MA <> longer-term MA)
+📈 Sell Signal = (shorter-term MA <  mid-term MA) && (mid-term MA < longer-term MA)
 ~~~
 
 ---

@@ -5,12 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Stocks</title>
-    <link rel="icon" type="image/x-icon" href="/images/SI.svg">
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <title>Markets</title>
+    <link rel="icon" type="image/x-icon" href="./images/SI.svg">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js">
+    </script>
     <!-- CSS files -->
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
-    <link rel="stylesheet" href="/stylesheets/css/tabler.min.css" />
+    <link rel="stylesheet" href="./stylesheets/css/tabler.min.css" />
     <style>
         @import url('https://rsms.me/inter/inter.css');
 
@@ -25,15 +26,15 @@
     <header class="navbar navbar-expand-sm navbar-light d-print-none">
         <div class="container-xl">
             <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-                <a href="/">
-                    <img src="/images/STOCKINDICTOR_LOGO.svg" width="110" height="32" alt="Stock Indicator"
+                <a href="./">
+                    <img src="./images/STOCKINDICTOR_LOGO.svg" width="110" height="32" alt="Stock Indicator"
                         class="navbar-brand-image" />
                 </a>
             </h1>
             <div class="navbar-nav flex-row order-md-last">
                 <div class="nav-item d-none d-md-flex me-3">
                     <div class="btn-list">
-                        <a href="#" class="btn">
+                        <a href="./" class="btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round"
@@ -55,7 +56,7 @@
                 <div class="container-xl">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="/">
+                            <a class="nav-link" href="./">
                                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                         viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -71,8 +72,8 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="stocks">
+                        <li class="nav-item">
+                            <a class="nav-link" href="./stocks">
                                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -94,7 +95,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/markets">
+                            <a class="nav-link active" href="./">
                                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -138,53 +139,14 @@
 <body>
     <div class="page">
         <div class="page-wrapper">
-            <!-- Page Body (stock list) -->
+            <!-- Page Body (shome) -->
             <div class="page-body">
                 <div class="container-xl">
                     <div class="row row-deck row-cards">
-                        <div class="col-12" id="pageBody">
+                        <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title" style="color: #454545;">Stocks</h3>
-                                </div>
                                 <div class="card-body">
-                                    <div class="list-group card-list-group" id="stocksList">
-                                        <!--dynamically created list hear-->
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex align-items-center">
-                                    <p class="m-0 text-secondary">Showing <span>1</span> to <span>8</span> of
-                                        <span>16</span> entries
-                                    </p>
-                                    <ul class="pagination m-0 ms-auto">
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
-                                                    height="24" viewBox="0 0 24 24" stroke-width="2"
-                                                    stroke="currentColor" fill="none" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M15 6l-6 6l6 6" />
-                                                </svg>
-                                            </a>
-                                        </li>
-                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="#">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24"
-                                                    height="24" viewBox="0 0 24 24" stroke-width="2"
-                                                    stroke="currentColor" fill="none" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                    <path d="M9 6l6 6l-6 6" />
-                                                </svg>
-                                            </a>
-                                        </li>
-                                    </ul>
+                                    Markets
                                 </div>
                             </div>
                         </div>
@@ -198,7 +160,7 @@
         <div class="container-xl">
             <div class="row text-center align-items-center flex-row-reverse">
                 <ul class="list-inline list-inline-dots mb-0">
-                    Copyright &copy; <span id="copyright-year">2025</span> Stock Indicator
+                    Copyright &copy; <span id="copyright-year">2024</span> Stock Indicator
                 </ul>
             </div>
         </div>
@@ -206,12 +168,13 @@
     </div>
     </div>
     </div>
-    <!-- Chart Script -->
-    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/libs/apexcharts/dist/apexcharts.min.js"
-        defer></script>
+    <!-- JS -->
+    <script>
+            //get current year for footer
+            document.getElementById("copyright-year").innerHTML = `${new Date().getFullYear()}`;
+    </script>
     <!-- JS File -->
-    <script src="/js/stocks.js"></script>
-    <script src="/stylesheets/js/tabler.min.js" defer></script>
+    <script src="./stylesheets/js/tabler.min.js" defer></script>
 </body>
 
 </html>

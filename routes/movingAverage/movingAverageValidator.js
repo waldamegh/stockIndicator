@@ -1,4 +1,4 @@
-const { getDate } = require('../stocks/stocksService');
+const { getDate, getDateDifferenceInDays } = require('../stocks/stocksService');
 
 //function validate numbers (positive integer and greater than 1)
 const isValidNum = (num) => {
@@ -26,7 +26,7 @@ const movingAverageValidator = (req, res, next) => {
     if (!req.body.strategy) {
         arrayMsg.push({ invalidField: 'strategy', errorMassage: 'strategy is required' });
     }
-    if (!(req.body.strategy === 'PriceCrossover' || req.body.strategy === 'DoubleMovingAverageCrossover' || req.body.strategy === 'TripleMovingAverageCrossover')) {
+    if (!((req.body.strategy).toLowerCase() === 'pricecrossover' || (req.body.strategy).toLowerCase() === 'doublemovingaveragecrossover' || (req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover')) {
         arrayMsg.push({ invalidField: 'strategy', errorMassage: 'strategy must be PriceCrossover, DoubleMovingAverageCrossover, or TripleMovingAverageCrossover' });
     }
     //short validation
@@ -38,7 +38,7 @@ const movingAverageValidator = (req, res, next) => {
         if (!req.body.short.type) {
             arrayMsg.push({ invalidField: 'short.type', errorMassage: 'short.type is required' });
         }
-        if (!(req.body.short.type === 'sma' || req.body.short.type === 'ema')) {
+        if (!((req.body.short.type).toLowerCase() === 'sma' || (req.body.short.type).toLowerCase() === 'ema')) {
             arrayMsg.push({ invalidField: 'short.type', errorMassage: 'short.type must be sma or ema' });
         }
         //numDays validation
@@ -57,7 +57,7 @@ const movingAverageValidator = (req, res, next) => {
         if (!req.body.mid.type) {
             arrayMsg.push({ invalidField: 'mid.type', errorMassage: 'mid.type is required' });
         }
-        if (!(req.body.mid.type === 'sma' || req.body.mid.type === 'ema')) {
+        if (!((req.body.mid.type).toLowerCase() === 'sma' || (req.body.mid.type).toLowerCase() === 'ema')) {
             arrayMsg.push({ invalidField: 'mid.type', errorMassage: 'mid.type must be sma or ema' });
         }
         //numDays validation
@@ -76,7 +76,7 @@ const movingAverageValidator = (req, res, next) => {
         if (!req.body.long.type) {
             arrayMsg.push({ invalidField: 'long.type', errorMassage: 'long.type is required' });
         }
-        if (!(req.body.long.type === 'sma' || req.body.long.type === 'ema')) {
+        if (!((req.body.long.type).toLowerCase() === 'sma' || (req.body.long.type).toLowerCase() === 'ema')) {
             arrayMsg.push({ invalidField: 'long.type', errorMassage: 'long.type must be sma or ema' });
         }
         //numDays validation
@@ -90,15 +90,24 @@ const movingAverageValidator = (req, res, next) => {
         }
     }
     //stratogy x long validation
-    if (req.body.strategy === 'DoubleMovingAverageCrossover' || req.body.strategy === 'TripleMovingAverageCrossover') {
+    if ((req.body.strategy).toLowerCase() === 'doublemovingaveragecrossover' || (req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover') {
         if (!req.body.long) {
             arrayMsg.push({ invalidField: 'long', errorMassage: 'long is required' });
         }
+        if (parseInt(req.body.long.numDays) <= parseInt(req.body.short.numDays)) {
+            arrayMsg.push({ invalidField: 'long.numDays', errorMassage: 'long numDays must be grater than short numDays' });
+        }
     }
     //stratogy x mid validation
-    if (req.body.strategy === 'TripleMovingAverageCrossover') {
+    if ((req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover') {
         if (!req.body.mid) {
             arrayMsg.push({ invalidField: 'mid', errorMassage: 'mid is required' });
+        }
+        if (parseInt(req.body.long.numDays) <= parseInt(req.body.mid.numDays)) {
+            arrayMsg.push({ invalidField: 'long.numDays', errorMassage: 'long numDays must be grater than mid numDays' });
+        }
+        if (parseInt(req.body.mid.numDays) <= parseInt(req.body.short.numDays)) {
+            arrayMsg.push({ invalidField: 'mid.numDays', errorMassage: 'mid numDays must be grater than short numDays' });
         }
     }
     const todayDate = getDate(0);
@@ -114,7 +123,6 @@ const movingAverageValidator = (req, res, next) => {
         if (!req.body.toDate) {
             arrayMsg.push({ invalidField: 'toDate', errorMassage: 'toDate is required' });
         }
-        //date valid format + from date < today date + from date < to date + from date >= oldest db record 
     }
     if (req.body.toDate) {
         if (!isValidDate(req.body.toDate)) {
@@ -130,10 +138,26 @@ const movingAverageValidator = (req, res, next) => {
             arrayMsg.push({ invalidField: 'toDate', errorMassage: 'toDate is invalid date, toDate cannot be equle or less than fromDate' });
         }
     }
+    if(req.body.fromDate && req.body.toDate){
+        var dateDifferenceInDays = getDateDifferenceInDays(req.body.fromDate, req.body.toDate);
+        if(dateDifferenceInDays < req.body.short.numDays){
+            arrayMsg.push({ invalidField: 'short.numDays', errorMassage: 'short.numDays must be less than or equal to the number of days for the selected dates (fromDate,toDate)' });
+        }
+        if((req.body.strategy).toLowerCase() === 'doublemovingaveragecrossover' || (req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover'){
+            if(dateDifferenceInDays < req.body.long.numDays){
+                arrayMsg.push({ invalidField: 'long.numDays', errorMassage: 'long.numDays must be less than or equal to the number of days for the selected dates (fromDate,toDate)' });
+            }
+        }
+        if((req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover'){
+            if(dateDifferenceInDays < req.body.mid.numDays){
+                arrayMsg.push({ invalidField: 'mid.numDays', errorMassage: 'mid.numDays must be less than or equal to the number of days for the selected dates (fromDate,toDate)' });
+            }
+        }
+    }
     //return 400 if there is an invalid field
     if (arrayMsg.length > 0) {
         res.status(400).send({
-            error: 'invalid request',
+            error: 'invalid request!',
             errorDetails: arrayMsg,
         });
         return;

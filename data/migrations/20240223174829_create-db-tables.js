@@ -3,7 +3,7 @@ exports.up = function (knex) {
         .createTable('stocks', tbl => {
             //create TABLE stocks
             tbl.increments();
-            tbl.string('symbol', 4)
+            tbl.string('symbol', 5)
                 .unique()
                 .notNullable()
                 .index()
@@ -12,9 +12,13 @@ exports.up = function (knex) {
                 .notNullable();
             tbl.string('marketName')
                 .notNullable();
-            tbl.string('industryGroup')
+            tbl.string('sector')
+                .notNullable();
+            tbl.string('industry')
                 .notNullable();
             tbl.string('description');
+            tbl.string('currency');
+            tbl.string('website');
             tbl.string('logoUrl');
         }).createTable('dailyPrice', tbl => {
             //create TABLE dailyPrice
@@ -28,6 +32,8 @@ exports.up = function (knex) {
                 .notNullable();
             tbl.float('closePrice')
                 .notNullable();
+            tbl.float('change');
+            tbl.float('changePercent');
         }).createTable('statuses', tbl => {
             //create TABLE statuses
             tbl.increments();

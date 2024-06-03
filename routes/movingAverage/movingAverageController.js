@@ -1,21 +1,22 @@
-const movingAverageService = require('./movingAverageService');
+const {movingAverageService, movingAveragePrecheck} = require('./movingAverageService');
 const db = require('../../models/dbHelpers');
 const { getDate } = require('../stocks/stocksService');
 
 const movingAverageController = async (req, res) => {
     //validate fromDate & toDate with database records
-    const oldestDate = await db.findOldestStockPrice(req.body.symbol);
+    await movingAveragePrecheck((req.body.symbol).toUpperCase());
+    const oldestDate = await db.findOldestStockPrice((req.body.symbol).toUpperCase());
     if (req.body.fromDate < oldestDate.dayDate || req.body.toDate < oldestDate.dayDate) {
         console.log('===Error fromDate is older than stock date in the db')
         res.status(500).json({ message: `Error: fromDate and toDate are not suitable to the data we have, it must be a date after or equal (${oldestDate.dayDate})` });
         return;
     }
     //call stratgy function
-    if (req.body.strategy === 'DoubleMovingAverageCrossover') {
+    if ((req.body.strategy).toLowerCase() === 'doublemovingaveragecrossover') {
         await doubleMovingAverageCrossover(req, res);
-    } else if (req.body.strategy === 'TripleMovingAverageCrossover') {
+    } else if ((req.body.strategy).toLowerCase() === 'triplemovingaveragecrossover') {
         await tripleMovingAverageCrossover(req, res);
-    } else if (req.body.strategy === 'PriceCrossover') {
+    } else if ((req.body.strategy).toLowerCase() === 'pricecrossover') {
         await priceCrossover(req, res);
     } else {
         res.status(400).send({ error: 'invalid request' });
@@ -31,7 +32,7 @@ const smaCalc = async (stockPrice, numDays, stockPriceOriginal) => {
         for (let j = 0; j < numDays; j++) {
             sum += stockPriceOriginal[j + i].price
         }
-        sma.push({ date: stockPrice[i].date, value: (sum / numDays) });
+        sma.push({ date: stockPrice[i].date, value: ((sum / numDays)).toFixed(2) });
     }
     //send sma result
     console.log('===sma -> Done');
@@ -48,7 +49,7 @@ const emaCalc = async (stockPrice, numDays, stockPriceOriginal) => {
     let k = 2 / (numDays + 1)
     console.log(`k is ${k}`)
     for (let i = 1; i < stockPrice.length; i++) {
-        ema.push({ date: stockPrice[i].date, value: ((stockPrice[i].price * k) + (ema[i - 1].value * (1 - k))) });
+        ema.push({ date: stockPrice[i].date, value: ((stockPrice[i].price * k) + (ema[i - 1].value * (1 - k))).toFixed(2) });
     }
     console.log('===ema -> Done')
     return ema;
@@ -57,7 +58,7 @@ const emaCalc = async (stockPrice, numDays, stockPriceOriginal) => {
 //fuction returns JSON for price & sma/ema
 const priceCrossover = async (req, res) => {
     //get request data
-    const symbol = req.body.symbol;
+    const symbol = (req.body.symbol).toUpperCase();
     const numDays = req.body.short.numDays;
     const fromDate = req.body.fromDate || getDate(365);
     const toDate = req.body.toDate || getDate(1);
@@ -78,9 +79,9 @@ const priceCrossover = async (req, res) => {
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDays - 1);
         //calc moving avarage
-        if (req.body.short.type === 'sma') {
+        if ((req.body.short.type).toLowerCase() === 'sma') {
             movingAverageResult = await smaCalc(stockPrice, numDays, stockPriceOriginal);
-        } else if (req.body.short.type === 'ema') {
+        } else if ((req.body.short.type).toLowerCase() === 'ema') {
             movingAverageResult = await emaCalc(stockPrice, numDays, stockPriceOriginal);
         }
         //calc buy/sell signal
@@ -91,7 +92,7 @@ const priceCrossover = async (req, res) => {
         }
         //send moving avarage result
         console.log('===priceCrossover -> Done')
-        res.status(200).json({ stockPrice: stockPriceOriginal, movingAverageResult: movingAverageResult, signal: signal });
+        res.status(200).json({ stockPrice: stockPriceOriginal, movingAverageResultShort: movingAverageResult, signal: signal });
     } catch (error) {
         console.log(`===Error getting stock price, Error: ${error}`)
         res.status(500).json({ message: "Error: unable to get stock price" });
@@ -100,7 +101,7 @@ const priceCrossover = async (req, res) => {
 //function rturns two moving avrage (sma/ema) & price
 const doubleMovingAverageCrossover = async (req, res) => {
     //get request data
-    const symbol = req.body.symbol;
+    const symbol = (req.body.symbol).toUpperCase();
     const numDaysShort = req.body.short.numDays;
     const numDaysLong = req.body.long.numDays;
     const fromDate = req.body.fromDate || getDate(365);
@@ -113,7 +114,7 @@ const doubleMovingAverageCrossover = async (req, res) => {
         let movingAverageResultLong = [];
         let signal = "Hold";
         //fetch stock price
-        const stockPriceOriginal = await movingAverageService(symbol);
+        const stockPriceOriginal = await movingAverageService(symbol, fromDate, toDate);
         //validate numDays
         if (!(stockPriceOriginal.length > numDaysShort || stockPriceOriginal.length > numDaysLong)) {
             console.log('===Error numDays is more than number of stock price in the db')
@@ -123,17 +124,17 @@ const doubleMovingAverageCrossover = async (req, res) => {
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDaysShort - 1);
         //calc moving avarage (short)
-        if (req.body.short.type === 'sma') {
+        if ((req.body.short.type).toLowerCase() === 'sma') {
             movingAverageResultShort = await smaCalc(stockPrice, numDaysShort, stockPriceOriginal);
-        } else if (req.body.short.type === 'ema') {
+        } else if ((req.body.short.type).toLowerCase() === 'ema') {
             movingAverageResultShort = await emaCalc(stockPrice, numDaysShort, stockPriceOriginal);
         }
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDaysLong - 1);
         //calc moving avarage (long)
-        if (req.body.long.type === 'sma') {
+        if ((req.body.long.type).toLowerCase() === 'sma') {
             movingAverageResultLong = await smaCalc(stockPrice, numDaysLong, stockPriceOriginal);
-        } else if (req.body.long.type === 'ema') {
+        } else if ((req.body.long.type).toLowerCase() === 'ema') {
             movingAverageResultLong = await emaCalc(stockPrice, numDaysLong, stockPriceOriginal);
         }
         //calc buy/sell signal
@@ -153,10 +154,10 @@ const doubleMovingAverageCrossover = async (req, res) => {
 //function rturns three moving avrage (sma/ema) & price
 const tripleMovingAverageCrossover = async (req, res) => {
     //get request data
-    const symbol = req.body.symbol;
+    const symbol = (req.body.symbol).toUpperCase();
     const numDaysShort = req.body.short.numDays;
     const numDaysLong = req.body.long.numDays;
-    const numDaysMid = req.body.Mid.numDays;
+    const numDaysMid = req.body.mid.numDays;
     const fromDate = req.body.fromDate || getDate(365);
     const toDate = req.body.toDate || getDate(1);
     console.log(`===fromDate is ${fromDate} & toDate is ${toDate}`);
@@ -168,7 +169,7 @@ const tripleMovingAverageCrossover = async (req, res) => {
         let movingAverageResultMid = [];
         let signal = "Hold";
         //fetch stock price
-        const stockPriceOriginal = await movingAverageService(symbol);
+        const stockPriceOriginal = await movingAverageService(symbol, fromDate, toDate);
         //validate numDays
         if (!(stockPriceOriginal.length > numDaysShort || stockPriceOriginal.length > numDaysLong || stockPriceOriginal.length > numDaysMid)) {
             console.log('===Error numDays is more than number of stock price in the db')
@@ -178,25 +179,25 @@ const tripleMovingAverageCrossover = async (req, res) => {
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDaysShort - 1);
         //calc moving avarage (short)
-        if (req.body.short.type === 'sma') {
+        if ((req.body.short.type).toLowerCase() === 'sma') {
             movingAverageResultShort = await smaCalc(stockPrice, numDaysShort, stockPriceOriginal);
-        } else if (req.body.short.type === 'ema') {
+        } else if ((req.body.short.type).toLowerCase() === 'ema') {
             movingAverageResultShort = await emaCalc(stockPrice, numDaysShort, stockPriceOriginal);
         }
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDaysLong - 1);
         //calc moving avarage (long)
-        if (req.body.long.type === 'sma') {
+        if ((req.body.long.type).toLowerCase() === 'sma') {
             movingAverageResultLong = await smaCalc(stockPrice, numDaysLong, stockPriceOriginal);
-        } else if (req.body.long.type === 'ema') {
+        } else if ((req.body.long.type).toLowerCase() === 'ema') {
             movingAverageResultLong = await emaCalc(stockPrice, numDaysLong, stockPriceOriginal);
         }
         //store sub stock price
         stockPrice = stockPriceOriginal.slice(numDaysMid - 1);
         //calc moving avarage (mid)
-        if (req.body.mid.type === 'sma') {
+        if ((req.body.mid.type).toLowerCase() === 'sma') {
             movingAverageResultMid = await smaCalc(stockPrice, numDaysMid, stockPriceOriginal);
-        } else if (req.body.Mid.type === 'ema') {
+        } else if ((req.body.Mid.type).toLowerCase() === 'ema') {
             movingAverageResultMid = await emaCalc(stockPrice, numDaysMid, stockPriceOriginal);
         }
         //calc buy/sell signal

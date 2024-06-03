@@ -1,9 +1,15 @@
-const express = require('express');
-const {getAllStocksService, getStockInfoService, fetchStockPriceService} = require('./stocksService');
+const { getAllStocksService, getStockInfoService, fetchStockPriceService, getDate } = require('./stocksService');
 
 const getAllStocks = async (req, res) => {
     try {
+        const price = (req.query.price).toLowerCase();
         const stocks = await getAllStocksService();
+        if (price === 'enabled') {
+            for (let i = 0; i < stocks.length; i++) {
+                const stockPrice = await fetchStockPriceService(stocks[i].symbol, getDate(7), getDate(1));
+                stocks[i].price = stockPrice;
+            }
+        }
         res.status(200).json({ stocks });
         console.log('===Get All Stocks -> Done');
     } catch (error) {
@@ -13,9 +19,9 @@ const getAllStocks = async (req, res) => {
 };
 
 const getStockInfo = async (req, res) => {
-    const symbol = req.params.symbol;
-    console.log(`===Stock symbol is ${symbol}`)
     try {
+        const symbol = (req.params.symbol).toUpperCase();
+        console.log(`===Stock symbol is ${symbol}`);
         const stock = await getStockInfoService(symbol);
         res.status(200).json({ stock });
         console.log('===Get Stock Info -> Done');
@@ -25,11 +31,13 @@ const getStockInfo = async (req, res) => {
     }
 };
 
-const getStockPrice = async(req, res) =>{
-    const symbol = req.params.symbol;
+const getStockPrice = async (req, res) => {
+    const symbol = (req.params.symbol).toUpperCase();
+    const fromDate = req.body.fromDate || getDate(365);
+    const toDate = req.body.toDate || getDate(1);
     console.log(`===Stock symbol is ${symbol}`)
     try {
-        const stockPrice = await fetchStockPriceService(symbol);
+        const stockPrice = await fetchStockPriceService(symbol, fromDate, toDate);
         res.status(200).json({ stockPrice });
         console.log('===Get Stock Price -> Done');
     } catch (error) {
@@ -38,4 +46,4 @@ const getStockPrice = async(req, res) =>{
     }
 }
 
-module.exports = {getAllStocks, getStockInfo, getStockPrice};
+module.exports = { getAllStocks, getStockInfo, getStockPrice };
