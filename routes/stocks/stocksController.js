@@ -6,7 +6,7 @@ const getAllStocks = async (req, res) => {
         const stocks = await getAllStocksService();
         if (price === 'enabled') {
             for (let i = 0; i < stocks.length; i++) {
-                const stockPrice = await fetchStockPriceService(stocks[i].symbol, getDate(7), getDate(1));
+                const stockPrice = await fetchStockPriceService(stocks[i].symbol, getDate(7, false), getDate(1, true));
                 stocks[i].price = stockPrice;
             }
         }
@@ -33,8 +33,8 @@ const getStockInfo = async (req, res) => {
 
 const getStockPrice = async (req, res) => {
     const symbol = (req.params.symbol).toUpperCase();
-    const fromDate = req.body.fromDate || getDate(365);
-    const toDate = req.body.toDate || getDate(1);
+    const fromDate = req.body.fromDate || getDate(737, false);
+    const toDate = req.body.toDate || getDate(1, true);
     console.log(`===Stock symbol is ${symbol}`)
     try {
         const stockPrice = await fetchStockPriceService(symbol, fromDate, toDate);

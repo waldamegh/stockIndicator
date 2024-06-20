@@ -31,6 +31,7 @@ window.onload = () => {
         }
     }).then(function (data) {
         const stocks = data.stocks;
+        document.getElementById('stocksList').innerHTML="";
         for (let i = 0; i < Object.entries(stocks).length; i++) {
             //div list group item
             divL1 = document.createElement("div");

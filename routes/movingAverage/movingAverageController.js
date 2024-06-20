@@ -7,6 +7,9 @@ const movingAverageController = async (req, res) => {
     await movingAveragePrecheck((req.body.symbol).toUpperCase());
     const oldestDate = await db.findOldestStockPrice((req.body.symbol).toUpperCase());
     if (req.body.fromDate < oldestDate.dayDate || req.body.toDate < oldestDate.dayDate) {
+        console.log(`oldestDate.dayDate ${oldestDate.dayDate}`)
+        console.log(`req.body.fromDate ${req.body.fromDate}`)
+        console.log(`req.body.toDate ${req.body.toDate}`)
         console.log('===Error fromDate is older than stock date in the db')
         res.status(500).json({ message: `Error: fromDate and toDate are not suitable to the data we have, it must be a date after or equal (${oldestDate.dayDate})` });
         return;
@@ -60,8 +63,8 @@ const priceCrossover = async (req, res) => {
     //get request data
     const symbol = (req.body.symbol).toUpperCase();
     const numDays = req.body.short.numDays;
-    const fromDate = req.body.fromDate || getDate(365);
-    const toDate = req.body.toDate || getDate(1);
+    const fromDate = req.body.fromDate || getDate(7, false);
+    const toDate = req.body.toDate || getDate(1, true);
     console.log(`===fromDate is ${fromDate} & toDate is ${toDate}`);
     try {
         //set variables
@@ -104,8 +107,8 @@ const doubleMovingAverageCrossover = async (req, res) => {
     const symbol = (req.body.symbol).toUpperCase();
     const numDaysShort = req.body.short.numDays;
     const numDaysLong = req.body.long.numDays;
-    const fromDate = req.body.fromDate || getDate(365);
-    const toDate = req.body.toDate || getDate(1);
+    const fromDate = req.body.fromDate || getDate(7, false);
+    const toDate = req.body.toDate || getDate(1, true);
     console.log(`===fromDate is ${fromDate} & toDate is ${toDate}`);
     try {
         //set variables
@@ -158,8 +161,8 @@ const tripleMovingAverageCrossover = async (req, res) => {
     const numDaysShort = req.body.short.numDays;
     const numDaysLong = req.body.long.numDays;
     const numDaysMid = req.body.mid.numDays;
-    const fromDate = req.body.fromDate || getDate(365);
-    const toDate = req.body.toDate || getDate(1);
+    const fromDate = req.body.fromDate || getDate(7, false);
+    const toDate = req.body.toDate || getDate(1, true);
     console.log(`===fromDate is ${fromDate} & toDate is ${toDate}`);
     try {
         //set variables

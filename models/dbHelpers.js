@@ -11,16 +11,21 @@ module.exports = {
     findStockPriceByIdFromToDate,
     addDailyPrice,
     findLatestStockPrice,
-    findOldestStockPrice
+    findOldestStockPrice,
+    getNotUpdatedStocks,
+    findStockStatus,
+    addStockStatus,
+    updateStockStatus
 }
 
+//Helpers: Table [stocks]
 async function getAllStocks() {
     return db('stocks');
 }
 
 async function addStock(stock) {
-    const [id] = await db('stocks').insert(stock);
-    return id;
+    await db('stocks').insert(stock);
+    return findStockById(stock.symbol);
 }
 
 async function findStockById(id) {
@@ -29,6 +34,7 @@ async function findStockById(id) {
         .first();
 }
 
+//Helpers: Table [dailyPrice]
 async function findStockPriceById(id) {
     return db('dailyPrice')
         .where({ symbol: id });
@@ -59,4 +65,27 @@ async function findOldestStockPrice(id) {
         .where({ symbol: id })
         .orderBy('dayDate', 'asc')
         .first();
+}
+
+//Helpers: Table [stockStatus]
+async function findStockStatus(symbol) {
+    return db('stockStatus')
+        .where({ symbol: symbol })
+        .first();
+}
+
+async function addStockStatus(stockUpdate) {
+    return db('stockStatus').insert(stockUpdate);
+}
+
+async function updateStockStatus(symbol, stockUpdate) {
+    return db('stockStatus')
+        .where({ symbol: symbol })
+        .update(stockUpdate);
+}
+
+async function getNotUpdatedStocks(toDate) {
+    return db('stockStatus')
+        .whereNot({ statusId: 3 })
+        .orWhere('toDate', '<', toDate );
 }

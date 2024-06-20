@@ -110,12 +110,17 @@ const movingAverageValidator = (req, res, next) => {
             arrayMsg.push({ invalidField: 'mid.numDays', errorMassage: 'mid numDays must be grater than short numDays' });
         }
     }
-    const todayDate = getDate(0);
-    console.log(`today date is ${todayDate}`)
+    const todayDate = getDate(0, false);
+    console.log(`today date is ${todayDate}`);
+    const maxDate = getDate(730, false);
+    console.log(`Max date is ${maxDate}`);
     //date validation
     if (req.body.fromDate) {
         if (!isValidDate(req.body.fromDate)) {
             arrayMsg.push({ invalidField: 'fromDate', errorMassage: 'fromDate is invalid date (date format is yyyy-mm-dd)' });
+        }
+        if(req.body.fromDate < maxDate){
+            arrayMsg.push({ invalidField: 'fromDate', errorMassage: 'fromDate is invalid date, must be not more than two years' });
         }
         if (req.body.fromDate > todayDate) {
             arrayMsg.push({ invalidField: 'fromDate', errorMassage: 'fromDate is invalid date, must be a date before today\'s date' });
