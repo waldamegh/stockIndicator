@@ -5,7 +5,7 @@ $(document).ready(function () {
         window.location.replace('../stocks');
     }
     //Fetch stock info
-    fetch(`http://localhost:3000/stocks/${symbol}`, {
+    fetch(`http://164.90.238.80:3000/stocks/${symbol}`, {
         method: 'POST',
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -48,7 +48,7 @@ $(document).ready(function () {
         //Price Chart
         //fetch price data
         let stockPrice = [];
-        fetch(`http://localhost:3000/stocks/price/${symbol}`, {
+        fetch(`http://164.90.238.80:3000/stocks/price/${symbol}`, {
             method: 'POST',
             mode: 'cors', // no-cors, *cors, same-origin
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -214,7 +214,7 @@ $(document).ready(function () {
             console.log(`request is ${JSON.stringify(request)}`);
             //fetch MA data
             let stockPrice = [];
-            fetch('http://localhost:3000/stocks/movingAverage', {
+            fetch('http://164.90.238.80:3000/stocks/movingAverage', {
                 method: 'POST',
                 mode: 'cors', // no-cors, *cors, same-origin
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

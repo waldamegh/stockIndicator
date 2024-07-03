@@ -1,7 +1,7 @@
 
 window.onload = () => {
     //Fetch stock info
-    fetch(`http://localhost:3000/stocks?price=enabled`, {
+    fetch(`http://164.90.238.80:3000/stocks?price=enabled`, {
         method: 'POST',
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
