@@ -100,7 +100,7 @@ window.onload = () => {
             //on click
             document.getElementById(`stockSymbol_${i}`).addEventListener("click", () => {
                 sessionStorage.setItem('symbol', document.getElementById(`stockSymbol_${i}`).getAttribute("value"));
-                window.location.replace('./stockProfile');
+                window.location.replace('./stocks/stockProfile');
             });
             //get price for chart
             let price = [];
